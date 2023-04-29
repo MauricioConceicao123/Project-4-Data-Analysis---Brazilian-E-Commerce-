@@ -62,16 +62,12 @@ SELECT *FROM customers;
 
   /**Category geolocation Table**/
 CREATE TABLE `geolocation` (
-  `order_id` VARCHAR(255) NOT NULL,
-  `order_item_id` INT(11) NOT NULL,
-  `product_id` VARCHAR(255) NOT NULL,
-  `seller_id` VARCHAR(255) NOT NULL,
-  `shipping_limit_date` DATETIME NOT NULL,
-  `price` DOUBLE(10,2) NOT NULL,
-  `freight_value` DOUBLE(10,2) NOT NULL,
-  PRIMARY KEY (`order_id`, )
+'geolocation_zip_code_prefix' INT(30) NOT NULL,
+'geolocation_lat' DOUBLE, NOT NULL
+'geolocation_lng' DOUBLE, NOT NULL
+'geolocation_city' VARCHAR(30) NOT NULL
+'geolocation_state' VARCHAR(30) NOT NULL
 );
-
 
 SELECT *FROM geolocation;
 
