@@ -62,11 +62,11 @@ SELECT *FROM customers;
 
   /**Category geolocation Table**/
 CREATE TABLE `geolocation` (
-'geolocation_zip_code_prefix' INT(255) NOT NULL,
-'geolocation_lat' DOUBLE, NOT NULL
-'geolocation_lng' DOUBLE, NOT NULL
-'geolocation_city' VARCHAR(255) NOT NULL
-'geolocation_state' VARCHAR(255) NOT NULL
+'geolocation_zip_code_prefix' INT(11) NOT NULL,
+'geolocation_lat' DOUBLE NOT NULL
+'geolocation_lng' DOUBLE NOT NULL
+'geolocation_city' VARCHAR(30) NOT NULL
+'geolocation_state' VARCHAR(30) NOT NULL
 );
 
 SELECT *FROM geolocation;
