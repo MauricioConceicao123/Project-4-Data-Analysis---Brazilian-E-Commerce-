@@ -49,54 +49,53 @@ CREATE TABLE Products (product_id VARCHAR(255) NOT NULL,
  SELECT *FROM Order_Reviews;
 
   /**Category customers Table**/  
-CREATE TABLE `customers` (
-  `customer_id` VARCHAR(255) NOT NULL,
-  `customer_unique_id` VARCHAR(255) NOT NULL,
-  `customer_zip_code_prefix` INT(11) NOT NULL,
-  `customer_city` VARCHAR(255) NOT NULL,
-  `customer_state` VARCHAR(255) NOT NULL,
-  PRIMARY KEY (`customer_id`)
+CREATE TABLE customers (
+  customer_id VARCHAR(32),
+  customer_unique_id VARCHAR(32),
+  customer_zip_code_prefix INT,
+  customer_city VARCHAR(32),
+  customer_state VARCHAR(2),
+  PRIMARY KEY customer_id
 );
 
 SELECT *FROM customers;
 
-  /**Category geolocation Table**/
-CREATE TABLE `geolocation` (
-'geolocation_zip_code_prefix' INT(11) NOT NULL,
-'geolocation_lat' DOUBLE NOT NULL
-'geolocation_lng' DOUBLE NOT NULL
-'geolocation_city' VARCHAR(30) NOT NULL
-'geolocation_state' VARCHAR(30) NOT NULL
+ 
+CREATE TABLE geolocation (
+id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
+geolocation_zip_code_prefix INT ,
+geolocation_lat DOUBLE,
+geolocation_lng DOUBLE,
+geolocation_city VARCHAR(30),
+geolocation_state VARCHAR(2)
 );
 
 SELECT *FROM geolocation;
 
-
   /**Category order_payments Table**/  
 
-CREATE TABLE `order_payments` (
-  `order_id` VARCHAR(255) NOT NULL,
-  `payment_sequential` INT(11) NOT NULL,
-  `payment_type` VARCHAR(255) NOT NULL,
-  `payment_installments` INT(11) NOT NULL,
-  `payment_value` DOUBLE(10,2) NOT NULL,
-  PRIMARY KEY (`order_id`)
-);
-
-
+CREATE TABLE order_payments (
+  id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
+  order_id VARCHAR(32) NOT NULL,
+  payment_sequential INT,
+  payment_type VARCHAR(20),
+  payment_installments INT,
+  payment_value DOUBLE
+  );
+  
 SELECT *FROM order_payments;
 
 
-
   /**Category order_items Table**/  
-CREATE TABLE `order_items` (
-  `order_id` VARCHAR(255) NOT NULL,
-  `order_item_id` INT(11) NOT NULL,
-  `product_id` VARCHAR(255) NOT NULL,
-  `seller_id` VARCHAR(255) NOT NULL,
-  `shipping_limit_date` DATETIME NOT NULL,
-  `price` DOUBLE(10,2) NOT NULL,
-  `freight_value` DOUBLE(10,2) NOT NULL,
+CREATE TABLE order_items (
+id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
+  order_id VARCHAR(32) NOT NULL,
+  order_item_id INT,
+  product_id VARCHAR(32),
+  seller_id VARCHAR(32) NOT NULL,
+  shipping_limit_date DATETIME ,
+  price DOUBLE,
+  freight_value DOUBLE,
   PRIMARY KEY (`order_id`)
 );
 
