@@ -1,5 +1,5 @@
 /**Category Products Table**/ 
-CREATE TABLE products (
+CREATE TABLE IF NOT EXISTS products (
 	product_id VARCHAR(32) PRIMARY KEY,
  	product_category_name VARCHAR(50), product_name_lenght INT,
  	product_description_lenght INT,
@@ -25,7 +25,7 @@ SET FOREIGN_KEY_CHECKS=1;
 
 
 /**Category category_translation Table**/
-CREATE TABLE category_translation (
+CREATE TABLE IF NOT EXISTS category_translation (
 	product_category_name VARCHAR(50) PRIMARY KEY,
 	product_category_name_english VARCHAR(50)
 );
@@ -39,7 +39,7 @@ IGNORE 1 ROWS;
 
         
 /**Category Sellers Table**/ 
-CREATE TABLE  sellers (
+CREATE TABLE IF NOT EXISTS  sellers (
 	seller_id VARCHAR(32)  PRIMARY KEY,
  	seller_zip_code_prefix INT,
  	seller_city VARCHAR(50),
@@ -90,7 +90,7 @@ DROP TABLE temp_sellers_unique;
 
  
  /**Category customers Table**/ 
-CREATE TABLE customers (
+CREATE TABLE IF NOT EXISTS customers (
 	customer_id VARCHAR(32) PRIMARY KEY,
 	customer_unique_id VARCHAR(32),
 	customer_zip_code_prefix INT,
@@ -107,7 +107,7 @@ LINES TERMINATED BY '\n'
 IGNORE 1 ROWS;
 
  /**Category geolocation Table**/ 
- CREATE TABLE geolocation (
+ CREATE TABLE IF NOT EXISTS geolocation (
 	geolocation_zip_code_prefix INT  PRIMARY KEY ,
 	geolocation_lat DOUBLE,
 	geolocation_lng DOUBLE,
@@ -124,7 +124,7 @@ IGNORE 1 ROWS;
     
 
 /**Category orders Table**/
-CREATE TABLE orders (
+CREATE TABLE IF NOT EXISTS orders (
 	order_id VARCHAR(50) PRIMARY KEY,
  	customer_id VARCHAR(32) NOT NULL,
  	order_status VARCHAR(20),
@@ -148,7 +148,7 @@ IGNORE 1 ROWS;
 SET FOREIGN_KEY_CHECKS=1;
     
  /**Category order_items Table**/  
-CREATE TABLE order_items (
+CREATE TABLE IF NOT EXISTS order_items (
   	order_id VARCHAR(32) PRIMARY KEY,
   	order_item_id INT,
   	product_id VARCHAR(32),
@@ -173,7 +173,7 @@ SET FOREIGN_KEY_CHECKS=1;
 
 
 /**Category order_payments Table**/
- CREATE TABLE order_payments (
+ CREATE TABLE IF NOT EXISTS order_payments (
   	order_id VARCHAR(32) PRIMARY KEY,
   	payment_sequential INT,
   	payment_type VARCHAR(20),
@@ -193,7 +193,7 @@ IGNORE 1 ROWS;
 SET FOREIGN_KEY_CHECKS=1;
  
 /**Category  order_reviews Table**/
-CREATE TABLE order_reviews (
+CREATE TABLE IF NOT EXISTS order_reviews (
   	review_id VARCHAR(32) PRIMARY KEY,
 	order_id VARCHAR(32),
    	review_score INT,
