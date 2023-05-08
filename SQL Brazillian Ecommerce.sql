@@ -47,45 +47,45 @@ CREATE TABLE IF NOT EXISTS  sellers (
     FOREIGN KEY (seller_zip_code_prefix) REFERENCES geolocation (geolocation_zip_code_prefix)
 	);
    
-CREATE TABLE temp_sellers (
-  seller_id VARCHAR(32),
-  seller_zip_code_prefix INT,
-  seller_city VARCHAR(100),
-  seller_state CHAR(2)
-);
+-- CREATE TABLE temp_sellers (
+--   seller_id VARCHAR(32),
+--   seller_zip_code_prefix INT,
+--   seller_city VARCHAR(100),
+--   seller_state CHAR(2)
+-- );
 
-LOAD DATA INFILE 'C:/ProgramData/MySQL/MySQL Server 8.0/Data/sellers.csv'
-INTO TABLE temp_sellers
-FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"' LINES TERMINATED BY '\n'
-IGNORE 1 ROWS;
+-- LOAD DATA INFILE 'C:/ProgramData/MySQL/MySQL Server 8.0/Data/sellers.csv'
+-- INTO TABLE temp_sellers
+-- FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"' LINES TERMINATED BY '\n'
+-- IGNORE 1 ROWS;
 
-SELECT seller_id, COUNT(*)
-FROM temp_sellers
-GROUP BY seller_id
-HAVING COUNT(*) > 1;
+-- SELECT seller_id, COUNT(*)
+-- FROM temp_sellers
+-- GROUP BY seller_id
+-- HAVING COUNT(*) > 1;
 
-INSERT INTO sellers (seller_id, seller_zip_code_prefix, seller_city, seller_state)
-SELECT seller_id, seller_zip_code_prefix, seller_city, seller_state
-FROM temp_sellers;
+-- INSERT INTO sellers (seller_id, seller_zip_code_prefix, seller_city, seller_state)
+-- SELECT seller_id, seller_zip_code_prefix, seller_city, seller_state
+-- FROM temp_sellers;
 
-CREATE TABLE temp_sellers_unique (
-   seller_id VARCHAR(32),
-   seller_zip_code_prefix INT,
-   seller_city VARCHAR(100),
-   seller_state CHAR(2)
-);
-INSERT INTO temp_sellers_unique (seller_id, seller_zip_code_prefix, seller_city, seller_state)
-SELECT seller_id, seller_zip_code_prefix, seller_city, seller_state
-FROM temp_sellers
-GROUP BY seller_id, seller_zip_code_prefix, seller_city, seller_state;
+-- CREATE TABLE temp_sellers_unique (
+--    seller_id VARCHAR(32),
+--    seller_zip_code_prefix INT,
+--    seller_city VARCHAR(100),
+--    seller_state CHAR(2)
+-- );
+-- INSERT INTO temp_sellers_unique (seller_id, seller_zip_code_prefix, seller_city, seller_state)
+-- SELECT seller_id, seller_zip_code_prefix, seller_city, seller_state
+-- FROM temp_sellers
+-- GROUP BY seller_id, seller_zip_code_prefix, seller_city, seller_state;
 
-INSERT INTO sellers (seller_id, seller_zip_code_prefix, seller_city, seller_state)
-SELECT seller_id, seller_zip_code_prefix, seller_city, seller_state
-FROM temp_sellers_unique;
+-- INSERT INTO sellers (seller_id, seller_zip_code_prefix, seller_city, seller_state)
+-- SELECT seller_id, seller_zip_code_prefix, seller_city, seller_state
+-- FROM temp_sellers_unique;
 
-DROP TABLE temp_sellers;
+-- DROP TABLE temp_sellers;
 
-DROP TABLE temp_sellers_unique;
+-- DROP TABLE temp_sellers_unique;
 
 
  
