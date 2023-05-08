@@ -29,7 +29,7 @@ CREATE TABLE sellers (
  	seller_zip_code_prefix INT NOT NULL,
  	seller_city VARCHAR(50),
  	seller_state VARCHAR(2),
-	FOREIGN KEY (seller_zip_code_prefix) REFERENCES (customer_zip_code_prefix) 
+	FOREIGN KEY (zip_code_prefix) REFERENCES customer (customer_zip_code_prefix) 
 	);
 
  /*SELECT 
@@ -100,7 +100,7 @@ CREATE TABLE customers (
   	customer_zip_code_prefix INT,
   	customer_city VARCHAR(32),
   	customer_state VARCHAR(2),
-  	FOREIGN KEY zip_code_prefix
+  	FOREIGN KEY (zip_code_prefix) REFERENCES geolocation (geolocation_zip_code_prefix)
 	);
 
 SELECT *FROM customers;
@@ -140,8 +140,8 @@ CREATE TABLE order_items (
   	shipping_limit_date DATETIME ,
   	price DOUBLE,
   	freight_value DOUBLE,
-  	FOREIGN KEY seller_id => Sellers(seller_id),
-  	FOREIGN KEY product_id => Products(product_id)
+  	FOREIGN KEY (seller_id) REFERENCES Sellers(seller_id),
+  	FOREIGN KEY (product_id) REFERENCES Products(product_id)
 	);
 
 
