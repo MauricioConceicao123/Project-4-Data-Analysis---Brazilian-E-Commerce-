@@ -29,18 +29,36 @@ engine = create_engine(f'mysql://{user}:{password}@{host}:{port}/{database}')
 query_top_products = """
 SELECT 
     p.product_id, 
-    p.product_category_name,
+    ct.product_category_name_english,
     COUNT(oi.order_id) as order_count
 FROM 
     products p
 JOIN 
     order_items oi ON p.product_id = oi.product_id
+JOIN
+    Category_translation ct ON p.product_category_name = ct.product_category_name
 GROUP BY 
-    p.product_id, p.product_category_name
+    p.product_id, ct.product_category_name_english
 ORDER BY 
     order_count DESC
 LIMIT 10;
 """
+
+# query_top_products = """
+# SELECT 
+#     p.product_id, 
+#     p.product_category_name,
+#     COUNT(oi.order_id) as order_count
+# FROM 
+#     products p
+# JOIN 
+#     order_items oi ON p.product_id = oi.product_id
+# GROUP BY 
+#     p.product_id, p.product_category_name
+# ORDER BY 
+#     order_count DESC
+# LIMIT 10;
+# """
 
 
 query_top_sellers = """
