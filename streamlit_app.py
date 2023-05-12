@@ -20,9 +20,9 @@ host = 'localhost'
 port = '3306'
 database = 'db'
 
-connection = mysql.connector.connect(user = 'root', password = 'password', host = 'localhost', port = '3306', database = 'db', use_pure = True)
+connection = mysql.connector.connect(user = 'root', password = '123password', host = 'localhost', port = '3306', database = 'db', use_pure = True)
 
-engine = create_engine(f'mysql://{user}:{password}@{host}:{port}/{database}')
+#engine = create_engine(f'mysql://{user}:{password}@{host}:{port}/{database}')
 
 # Define your SQL queries as strings
 
@@ -151,7 +151,7 @@ WHERE
 
 def run_query(query):
     # Execute the query and store the result in a DataFrame
-    df = pd.read_sql_query(query, engine)
+    df = pd.read_sql_query(query, connection)
     return df
 
 
