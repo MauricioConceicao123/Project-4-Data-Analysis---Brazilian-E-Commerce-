@@ -1,4 +1,5 @@
 import streamlit as st
+import mysql.connector
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -178,3 +179,58 @@ st.dataframe(df_top_sellers)
 st.header('Customer Retention Rate')
 df_customer_retention_rate = run_query(query_customer_retention_rate)
 st.dataframe(df_customer_retention_rate)
+
+
+#MAURICIOS STUFF
+
+#connection = mysql.connector.connect(user = 'root', password = 'password', host = '127.0.0.1', port = '3306', database = 'brazil_commerce_project')
+#query_orders = "SELECT*FROM orders"
+#df_orders = pd.read_sql_query(query_orders,connection)
+#df_orders
+
+##Here we shall make the necessary calculations in order to achieve the order completion rate
+
+#order_status_count = df_orders['order_status'].value_counts()
+#print (order_status_count)
+
+#order_status_list = df_orders['order_status'].unique()
+#print(order_status_list)
+
+#order_status_count = df_orders['order_status'].value_counts()
+#fig, ax = plt.subplots(1,1)
+#order_status_count.plot(kind='bar', ax=ax)
+#ax.set_title('Order Completion Rate')
+#ax.set_xlabel('')
+#ax.set_ylabel('Frequency')
+#plt.show()
+
+#query_orderpayments = "SELECT*FROM order_payments"
+#df_orderpayments = pd.read_sql_query(query_orderpayments,connection)
+#df_orderpayments
+
+###Here are the different payment types used by the clients of the company
+#order_payment_type = df_orderpayments['payment_type'].value_counts()
+#print (order_payment_type)
+
+##boleto --> bill or invoice that can be paid at banks and other places. Alternative to credit cards very popular in Brazil
+## Here we shall create the graphs regarding the Payment Type
+
+#payment_counts = df_orderpayments['payment_type'].value_counts()
+#fig, ax = plt.subplots(1,1)
+#payment_counts.plot(kind='bar', ax=ax)
+#ax.set_title('Payment Type Frequencies')
+#ax.set_xlabel('Payment Type')
+#ax.set_ylabel('Frequency')
+#plt.show()
+
+#payment_counts = df_orderpayments['payment_type'].value_counts()
+#payment_percentages = payment_counts / payment_counts.sum() * 100
+
+#payment_percentages = payment_percentages.loc[['credit_card', 'boleto', 'voucher']]
+#labels = [label if label in ['credit_card', 'boleto', 'voucher'] else '' for label in payment_percentages.index]
+
+#fig, ax = plt.subplots(1,1)
+#ax.pie(payment_percentages, labels=labels, autopct='%1.1f%%')
+#ax.set_title('Payment Type Percentages')
+
+#plt.show()
