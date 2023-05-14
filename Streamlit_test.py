@@ -50,14 +50,27 @@ if choice == "Top 10 Most Popular Product Categories":
     LIMIT 10;
     """
     df_top_products = pd.read_sql_query(query_top_products, engine)
-    st.table(df_top_products)
-    fig, ax = plt.subplots(figsize=(12,6))
-    sns.barplot(y='product_category_name_english', x='order_count', data=df_top_products,  palette='viridis')
-    plt.xlabel('Order Count')
-    plt.ylabel('Product Category Name (English)')
-    plt.title('Top 10 Most Popular Product Categories')
+    
+    # Display the dataframe
+    st.table(df_top_products.style.set_properties(subset=['product_category_name_english'], **{'width': '300px'}))
+
+    # Bar chart
+    fig, ax = plt.subplots(1, 2, figsize=(18,6))
+    sns.barplot(y='product_category_name_english', x='order_count', data=df_top_products,  palette='viridis', ax=ax[0])
+    ax[0].set_xlabel('Order Count')
+    ax[0].set_ylabel('Product Category Name (English)')
+    ax[0].set_title('Top 10 Most Popular Product Categories')
+
+    # Pie chart
+    df_top_products.set_index('product_category_name_english', inplace=True)
+    df_top_products['order_count'].plot(kind='pie', autopct='%1.1f%%', startangle=140, ax=ax[1])
+    ax[1].set_ylabel('')  # This removes 'order_count' from the y-axis
+    ax[1].set_title('Sales Distribution Across Top 10 Categories')
+
     st.pyplot(fig)
     plt.clf()
+
+    
 
 elif choice == "Top 10 Sellers by Revenue":
     query_top_sellers = """
@@ -110,80 +123,56 @@ elif choice == "Top 10 Customers by Spending":
     
    
    
-   
-elif choice == "Customer Retention Rate":   
+ 
+
+
+elif choice == "Customer Retention Rate":    
     query_customer_retention_rate = """
     SELECT 
-        COUNT(DISTINCT CASE WHEN EXTRACT(YEAR FROM o.order_purchase_timestamp) = 2017 THEN c.customer_unique_id END) * 100.0 / 
-        (
-            SELECT 
-                COUNT(DISTINCT c.customer_unique_id)
-            FROM 
-                orders o
-            JOIN 
-                customers c ON o.customer_id = c.customer_id
-            WHERE 
-                EXTRACT(YEAR FROM o.order_purchase_timestamp) = 2016
-        )   AS retention_rate_2017,
-        COUNT(DISTINCT CASE WHEN EXTRACT(YEAR FROM o.order_purchase_timestamp) = 2018 THEN c.customer_unique_id END) * 100.0 / 
-        (
-         SELECT 
-                COUNT(DISTINCT c.customer_unique_id)
-         FROM 
-                orders o
-        JOIN 
-            customers c ON o.customer_id = c.customer_id
-        WHERE 
-            EXTRACT(YEAR FROM o.order_purchase_timestamp) = 2017
-    ) AS retention_rate_2018
+        EXTRACT(YEAR FROM o.order_purchase_timestamp) AS year,
+        COUNT(DISTINCT c.customer_unique_id) AS unique_customers
     FROM 
         orders o
     JOIN 
         customers c ON o.customer_id = c.customer_id
     WHERE 
-        EXTRACT(YEAR FROM o.order_purchase_timestamp) IN (2017, 2018) AND 
-        c.customer_unique_id IN (
-        SELECT 
-            c.customer_unique_id 
-        FROM 
-            orders o
-        JOIN 
-            customers c ON o.customer_id = c.customer_id
-        WHERE 
-            EXTRACT(YEAR FROM o.order_purchase_timestamp) IN (2016, 2017)
-        );
-    """     
+        EXTRACT(YEAR FROM o.order_purchase_timestamp) BETWEEN 2016 AND 2018
+    GROUP BY 
+        year
+    ORDER BY 
+        year; 
+    """
 
-
-    # Use pandas to execute the SQL query and store the result in a DataFrame
+    # Fetch data from database
     df_customer_retention_rate = pd.read_sql_query(query_customer_retention_rate, engine)
-
-    # Reshape the dataframe
-    df_customer_retention_rate = df_customer_retention_rate.melt(var_name='Year', value_name='Retention Rate')
-
-    # Replace the column names with actual year values
-    df_customer_retention_rate['Year'] = df_customer_retention_rate['Year'].replace({'retention_rate_2017': '2017', 'retention_rate_2018': '2018'})
-
-    # Convert 'Year' column to string
-    df_customer_retention_rate['Year'] = df_customer_retention_rate['Year'].astype(str)
-
+    
+    
     # Display the query results with Streamlit
     st.table(df_customer_retention_rate)
+    
+    # Set the plot style and size
+    sns.set(style="whitegrid")
+    fig, axes = plt.subplots(1, 2, figsize=(16,6))  # 1 row, 2 columns
 
-    # Plotting with Seaborn
-    fig, ax = plt.subplots(figsize=(12,6))
-    sns.barplot(x='Year', y='Retention Rate', data=df_customer_retention_rate,  palette='viridis', ax=ax)
-    ax.set_xlabel('Year')
-    ax.set_ylabel('Retention Rate (%)')
-    ax.set_title('Customer Retention Rate')
-    ax.set_yscale('log')
-    # format y-axis
-    ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda y, _: '{:.2%}'.format(y)))
+    # Create the line plot using Seaborn
+    sns.lineplot(x='year', y='unique_customers', data=df_customer_retention_rate, marker='o', ax=axes[0])
+
+    # Set the title and labels for line plot
+    axes[0].set_title('Customer Growth Over Time')
+    axes[0].set_xlabel('Year')
+    axes[0].set_ylabel('Unique Customers')
+
+    # Create the bar plot using Seaborn
+    sns.barplot(x='year', y='unique_customers', data=df_customer_retention_rate, ax=axes[1])
+
+    # Set the title and labels for bar plot
+    axes[1].set_title('Customer Growth Over Time')
+    axes[1].set_xlabel('Year')
+    axes[1].set_ylabel('Unique Customers')
+
     # Display the plot with Streamlit
     st.pyplot(fig)
-    plt.clf()
-
-
+    # plt.show()
 
 
 
