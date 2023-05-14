@@ -316,4 +316,151 @@ elif choice == "Top 10 Customers by Spending":
     fig, ax = plt.subplots(figsize=(12,6))
     sns.barplot(x='total_spent', y='customer_id', data=df_top_customers, palette='viridis')
     plt.xlabel('Total Spent')
+    plt.ylabel('Customer ID')
+    plt.title('Top 10 Customers by Spending')
+    st.pyplot(fig)
+    
+    
+    
+# elif choice == "Customer Retention Rate":        
+#     query_customer_retention_rate = """
+#     SELECT 
+#         COUNT(DISTINCT CASE WHEN EXTRACT(YEAR FROM o.order_purchase_timestamp) = 2017 THEN c.customer_unique_id END) * 100.0 / 
+#         (
+#             SELECT 
+#                 COUNT(DISTINCT c.customer_unique_id)
+#             FROM 
+#                 orders o
+#             JOIN 
+#                 customers c ON o.customer_id = c.customer_id
+#             WHERE 
+#                 EXTRACT(YEAR FROM o.order_purchase_timestamp) = 2016
+#         )   AS retention_rate_2017,
+#         COUNT(DISTINCT CASE WHEN EXTRACT(YEAR FROM o.order_purchase_timestamp) = 2018 THEN c.customer_unique_id END) * 100.0 / 
+#         (
+#          SELECT 
+#                 COUNT(DISTINCT c.customer_unique_id)
+#          FROM 
+#                 orders o
+#         JOIN 
+#             customers c ON o.customer_id = c.customer_id
+#         WHERE 
+#             EXTRACT(YEAR FROM o.order_purchase_timestamp) = 2017
+#     ) AS retention_rate_2018
+#     FROM 
+#         orders o
+#     JOIN 
+#         customers c ON o.customer_id = c.customer_id
+#     WHERE 
+#         EXTRACT(YEAR FROM o.order_purchase_timestamp) IN (2017, 2018) AND 
+#         c.customer_unique_id IN (
+#         SELECT 
+#             c.customer_unique_id 
+#         FROM 
+#             orders o
+#         JOIN 
+#             customers c ON o.customer_id = c.customer_id
+#         WHERE 
+#             EXTRACT(YEAR FROM o.order_purchase_timestamp) IN (2016, 2017)
+#         );
+#     """
+
+#     # Use pandas to execute the SQL query and store the result in a DataFrame
+#     df_customer_retention_rate = pd.read_sql_query(query_customer_retention_rate, engine)
+#     # Reshape the dataframe
+#     df_customer_retention_rate = df_customer_retention_rate.melt(var_name='Year', value_name='Retention Rate')
+#     # Replace the column names with actual year values
+#     df_customer_retention_rate['Year'] = df_customer_retention_rate['Year'].replace({'retention_rate_2017': '2017', 'retention_rate_2018': '2018'})
+#     # Convert 'Year' column to integer
+#     df_customer_retention_rate['Year'] = df_customer_retention_rate['Year'].astype(int)
+#     # Display the query results with Streamlit
+#     st.write(df_customer_retention_rate)
+
+#     # Plotting with Seaborn
+#     fig, ax = plt.subplots(figsize=(12,6))
+#     sns.barplot(x='Year', y='Retention Rate', data=df_customer_retention_rate,  palette='viridis', ax=ax)
+#     ax.set_xlabel('Year')
+#     ax.set_ylabel('Retention Rate (%)')
+#     ax.set_title('Customer Retention Rate')
+#     ax.set_yscale('log')
+#     # format y-axis
+#     ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda y, _: '{:.2%}'.format(y)))
+#     # Display the plot with Streamlit
+#     st.pyplot(fig)
+#     plt.clf()
+   
+   
+   
+elif choice == "Customer Retention Rate":   
+    query_customer_retention_rate = """
+    SELECT 
+        COUNT(DISTINCT CASE WHEN EXTRACT(YEAR FROM o.order_purchase_timestamp) = 2017 THEN c.customer_unique_id END) * 100.0 / 
+        (
+            SELECT 
+                COUNT(DISTINCT c.customer_unique_id)
+            FROM 
+                orders o
+            JOIN 
+                customers c ON o.customer_id = c.customer_id
+            WHERE 
+                EXTRACT(YEAR FROM o.order_purchase_timestamp) = 2016
+        )   AS retention_rate_2017,
+        COUNT(DISTINCT CASE WHEN EXTRACT(YEAR FROM o.order_purchase_timestamp) = 2018 THEN c.customer_unique_id END) * 100.0 / 
+        (
+         SELECT 
+                COUNT(DISTINCT c.customer_unique_id)
+         FROM 
+                orders o
+        JOIN 
+            customers c ON o.customer_id = c.customer_id
+        WHERE 
+            EXTRACT(YEAR FROM o.order_purchase_timestamp) = 2017
+    ) AS retention_rate_2018
+    FROM 
+        orders o
+    JOIN 
+        customers c ON o.customer_id = c.customer_id
+    WHERE 
+        EXTRACT(YEAR FROM o.order_purchase_timestamp) IN (2017, 2018) AND 
+        c.customer_unique_id IN (
+        SELECT 
+            c.customer_unique_id 
+        FROM 
+            orders o
+        JOIN 
+            customers c ON o.customer_id = c.customer_id
+        WHERE 
+            EXTRACT(YEAR FROM o.order_purchase_timestamp) IN (2016, 2017)
+        );
+    """     
+
+
+    # Use pandas to execute the SQL query and store the result in a DataFrame
+    df_customer_retention_rate = pd.read_sql_query(query_customer_retention_rate, engine)
+
+    # Reshape the dataframe
+    df_customer_retention_rate = df_customer_retention_rate.melt(var_name='Year', value_name='Retention Rate')
+
+    # Replace the column names with actual year values
+    df_customer_retention_rate['Year'] = df_customer_retention_rate['Year'].replace({'retention_rate_2017': '2017', 'retention_rate_2018': '2018'})
+
+    # Convert 'Year' column to string
+    df_customer_retention_rate['Year'] = df_customer_retention_rate['Year'].astype(str)
+
+    # Display the query results with Streamlit
+    st.table(df_customer_retention_rate)
+
+    # Plotting with Seaborn
+    fig, ax = plt.subplots(figsize=(12,6))
+    sns.barplot(x='Year', y='Retention Rate', data=df_customer_retention_rate,  palette='viridis', ax=ax)
+    ax.set_xlabel('Year')
+    ax.set_ylabel('Retention Rate (%)')
+    ax.set_title('Customer Retention Rate')
+    ax.set_yscale('log')
+    # format y-axis
+    ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda y, _: '{:.2%}'.format(y)))
+    # Display the plot with Streamlit
+    st.pyplot(fig)
+    plt.clf()
+
 
