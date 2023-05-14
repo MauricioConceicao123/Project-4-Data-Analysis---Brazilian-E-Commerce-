@@ -6,7 +6,10 @@ import mysql.connector
 from sqlalchemy import create_engine
 import matplotlib.ticker as mticker
 import datetime as dt
-import streamlit.components.v1 as components
+
+st.markdown("# Sales Analysis Dashboard")
+st.markdown("An interactive dashboard for exploring sales data.")
+
 
 # Connection settings
 user = 'root'
@@ -23,7 +26,10 @@ engine = create_engine(f'mysql://{user}:{password}@{host}:{port}/{database}')
 options = ["Top 10 Most Popular Product Categories", "Top 10 Sellers by Revenue", "Top 10 Customers by Spending", "Customer Retention Rate"]
 
 # Create the dropdown menu in the sidebar
-choice = st.sidebar.selectbox("Choose an analysis:", options)
+st.sidebar.markdown("## Instructions")
+st.sidebar.markdown("Please select an analysis from the dropdown menu.")
+choice = st.sidebar.selectbox("", options)
+
 
 if choice == "Top 10 Most Popular Product Categories":
     query_top_products = """
@@ -43,10 +49,10 @@ if choice == "Top 10 Most Popular Product Categories":
         order_count DESC
     LIMIT 10;
     """
-    df = pd.read_sql_query(query_top_products, engine)
-    st.write(df)
+    df_top_products = pd.read_sql_query(query_top_products, engine)
+    st.table(df_top_products)
     fig, ax = plt.subplots(figsize=(12,6))
-    sns.barplot(y='product_category_name_english', x='order_count', data=df,  palette='viridis')
+    sns.barplot(y='product_category_name_english', x='order_count', data=df_top_products,  palette='viridis')
     plt.xlabel('Order Count')
     plt.ylabel('Product Category Name (English)')
     plt.title('Top 10 Most Popular Product Categories')
@@ -69,7 +75,7 @@ elif choice == "Top 10 Sellers by Revenue":
     LIMIT 10;
     """
     df_top_sellers = pd.read_sql_query(query_top_sellers, engine)
-    st.write(df_top_sellers)
+    st.table(df_top_sellers)
     fig, ax = plt.subplots(figsize=(12,6))
     sns.barplot(x='total_revenue', y='seller_id', data=df_top_sellers, palette='viridis')
     plt.xlabel('Total Revenue')
@@ -94,7 +100,7 @@ elif choice == "Top 10 Customers by Spending":
     LIMIT 10;
     """
     df_top_customers = pd.read_sql_query(query_top_customers, engine)
-    st.write(df_top_customers)
+    st.table(df_top_customers)
     fig, ax = plt.subplots(figsize=(12,6))
     sns.barplot(x='total_spent', y='customer_id', data=df_top_customers, palette='viridis')
     plt.xlabel('Total Spent')
@@ -148,46 +154,45 @@ elif choice == "Customer Retention Rate":
         );
     """     
 
-# Use pandas to execute the SQL query and store the result in a DataFrame
-df_customer_retention_rate = pd.read_sql_query(query_customer_retention_rate, engine)
-# Reshape the dataframe
-df_customer_retention_rate = df_customer_retention_rate.melt(var_name='Year', value_name='Retention Rate')
-# Replace the column names with actual year values
-df_customer_retention_rate['Year'] = df_customer_retention_rate['Year'].replace({'retention_rate_2017': '2017', 'retention_rate_2018': '2018'})
-# Convert 'Year' column to string
-df_customer_retention_rate['Year'] = df_customer_retention_rate['Year'].astype(str)
 
-# Define the color map for the 'Year' column
-color_map = {'2017': 'blue', '2018': 'green'}
+    # Use pandas to execute the SQL query and store the result in a DataFrame
+    df_customer_retention_rate = pd.read_sql_query(query_customer_retention_rate, engine)
 
-# Apply the color map to the 'Year' column
-def color_year(val):
-    color = color_map[val] if val in color_map else 'black'
-    return f'color: {color}'
+    # Reshape the dataframe
+    df_customer_retention_rate = df_customer_retention_rate.melt(var_name='Year', value_name='Retention Rate')
 
-# styled_df = df_customer_retention_rate.style.applymap(color_year, subset=['Year']).set_table_styles([
-#     {'selector': 'th', 'props': 'border: 1px solid black;'},
-#     {'selector': 'td', 'props': 'border: 1px solid black;'}
-# ]).render()
+    # Replace the column names with actual year values
+    df_customer_retention_rate['Year'] = df_customer_retention_rate['Year'].replace({'retention_rate_2017': '2017', 'retention_rate_2018': '2018'})
 
-styled_df = df_customer_retention_rate.style.applymap(color_year, subset=['Year']).set_table_styles([
-    {'selector': 'th', 'props': 'border: 1px solid black;'},
-    {'selector': 'td', 'props': 'border: 1px solid black;'}
-])._repr_html_()
+    # Convert 'Year' column to string
+    df_customer_retention_rate['Year'] = df_customer_retention_rate['Year'].astype(str)
+
+    # Display the query results with Streamlit
+    st.table(df_customer_retention_rate)
+
+    # Plotting with Seaborn
+    fig, ax = plt.subplots(figsize=(12,6))
+    sns.barplot(x='Year', y='Retention Rate', data=df_customer_retention_rate,  palette='viridis', ax=ax)
+    ax.set_xlabel('Year')
+    ax.set_ylabel('Retention Rate (%)')
+    ax.set_title('Customer Retention Rate')
+    ax.set_yscale('log')
+    # format y-axis
+    ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda y, _: '{:.2%}'.format(y)))
+    # Display the plot with Streamlit
+    st.pyplot(fig)
+    plt.clf()
 
 
-components.html(styled_df, width=None, height=None, scrolling=False)
 
-# Plotting with Seaborn
-fig, ax = plt.subplots(figsize=(12,6))
-sns.barplot(x='Year', y='Retention Rate', data=df_customer_retention_rate,  palette='viridis', ax=ax)
-ax.set_xlabel('Year')
-ax.set_ylabel('Retention Rate (%)')
-ax.set_title('Customer Retention Rate')
-ax.set_yscale('log')
-# format y-axis
-ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda y, _: '{:.2%}'.format(y)))
-# Display the plot with Streamlit
-st.pyplot(fig)
-plt.clf()
+
+
+
+
+
+
+
+
+
+
 
