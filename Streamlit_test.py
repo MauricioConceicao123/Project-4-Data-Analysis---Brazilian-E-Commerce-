@@ -71,49 +71,7 @@ if choice == "Top 10 Most Popular Product Categories":
 
     st.pyplot(fig)
     plt.clf()
-    
 
-# if choice == "Top 10 Most Popular Product Categories":
-#     query_top_products = """
-#        SELECT 
-#         ct.product_category_name_english,
-#         COUNT(oi.order_id) as order_count
-#     FROM 
-#         products p
-#     JOIN 
-#         order_items oi ON p.product_id = oi.product_id
-#     JOIN
-#         Category_translation ct ON p.product_category_name = ct.product_category_name
-#     GROUP BY 
-#         ct.product_category_name_english
-#     ORDER BY 
-#         order_count DESC
-#     LIMIT 10;
-#     """
-    
-    
-#     df_top_products = pd.read_sql_query(query_top_products, engine)
-    
-#     # Display the dataframe
-#     st.table(df_top_products.style.set_properties(subset=['product_category_name_english'], **{'width': '300px'}))
-
-#     # Bar chart
-#     fig, ax = plt.subplots(1, 2, figsize=(18,6))
-#     sns.barplot(y='product_category_name_english', x='order_count', data=df_top_products,  palette='viridis', ax=ax[0])
-#     ax[0].set_xlabel('Order Count')
-#     ax[0].set_ylabel('Product Category Name (English)')
-#     ax[0].set_title('Top 10 Most Popular Product Categories')
-
-#     # Pie chart
-#     df_top_products.set_index('product_category_name_english', inplace=True)
-#     df_top_products['order_count'].plot(kind='pie', autopct='%1.1f%%', startangle=140, ax=ax[1])
-#     ax[1].set_ylabel('')  # This removes 'order_count' from the y-axis
-#     ax[1].set_title('Sales Distribution Across Top 10 Categories')
-
-#     st.pyplot(fig)
-#     plt.clf()
-
-    
 
 elif choice == "Top 10 Sellers by Revenue":
     query_top_sellers = """
