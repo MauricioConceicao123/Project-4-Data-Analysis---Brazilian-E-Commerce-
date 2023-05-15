@@ -8,6 +8,8 @@ import matplotlib.ticker as mticker
 import datetime as dt
 import numpy as np
 
+st.set_page_config(layout="wide")
+
 st.markdown("# Sales Analysis Dashboard")
 st.markdown("An interactive dashboard for exploring sales data.")
 
@@ -23,7 +25,7 @@ connection = mysql.connector.connect(user=user, password=password, host=host, po
 engine = create_engine(f'mysql://{user}:{password}@{host}:{port}/{database}')
 
 # Choices for the dropdown menu
-options = ["Top 10 Most Popular Product Categories", "Top 10 Sellers by Revenue", "Top 10 Customers by Spending", "Customer Retention Rate"]
+options = ["Top 10 Most Popular Product Categories", "Top 10 Sellers by Revenue", "Top 10 Customers by Spending", "Customer Retention Rate", "Order Completion Rate", "Payment Type"]
 
 # dropdown menu in the sidebar
 st.sidebar.markdown("## Instructions")
@@ -158,63 +160,67 @@ elif choice == "Customer Retention Rate":
 
     st.pyplot(fig)
  
-#Mauricios Part
+    #Mauricios Part
+    
 
-query_orders = "SELECT*FROM orders"
-df_orders = pd.read_sql_query(query_orders,connection)
+if choice == "Order Completion Rate":
 
-df_orders
+    query_orders = "SELECT*FROM orders"
+    df_orders = pd.read_sql_query(query_orders,connection)
 
-#Here we shall make the necessary calculations in order to achieve the order completion rate
+    df_orders
 
-order_status_count = df_orders['order_status'].value_counts()
-print (order_status_count)
+    #Here we shall make the necessary calculations in order to achieve the order completion rate
 
-order_status_list = df_orders['order_status'].unique()
-print(order_status_list)
+    order_status_count = df_orders['order_status'].value_counts()
+    # print (order_status_count)
 
-order_status_count = df_orders['order_status'].value_counts()
-fig, ax = plt.subplots(1,1)
-order_status_count.plot(kind='bar', ax=ax)
-ax.set_title('Order Completion Rate')
-ax.set_xlabel('')
-ax.set_ylabel('Frequency')
-plt.show()
+    order_status_list = df_orders['order_status'].unique()
+    # print(order_status_list)
+
+    order_status_count = df_orders['order_status'].value_counts()
+    fig, ax = plt.subplots(1,1)
+    order_status_count.plot(kind='bar', ax=ax)
+    ax.set_title('Order Completion Rate')
+    ax.set_xlabel('')
+    ax.set_ylabel('Frequency')
+    st.pyplot(fig)
+    # plt.show()
+     
+if choice == "Payment Type":
+    query_orderpayments = "SELECT*FROM order_payments"
+    df_orderpayments = pd.read_sql_query(query_orderpayments,connection)
+
+    df_orderpayments
+
+    #Here are the different payment types used by the clients of the company
+
+    order_payment_type = df_orderpayments['payment_type'].value_counts()
+    # print (order_payment_type)
+
+    #boleto --> bill or invoice that can be paid at banks and other places. Alternative to credit cards very popular in Brazil
+    # Here we shall create the graphs regarding the Payment Type
+
+    payment_counts = df_orderpayments['payment_type'].value_counts()
+    fig, ax = plt.subplots(1,1)
+    payment_counts.plot(kind='bar', ax=ax)
+    ax.set_title('Payment Type Frequencies')
+    ax.set_xlabel('Payment Type')
+    ax.set_ylabel('Frequency')
+    st.pyplot(fig)
+    # plt.show()
 
 
 
-query_orderpayments = "SELECT*FROM order_payments"
-df_orderpayments = pd.read_sql_query(query_orderpayments,connection)
+    payment_counts = df_orderpayments['payment_type'].value_counts()
+    payment_percentages = payment_counts / payment_counts.sum() * 100
 
-df_orderpayments
+    payment_percentages = payment_percentages.loc[['credit_card', 'boleto', 'voucher']]
+    labels = [label if label in ['credit_card', 'boleto', 'voucher'] else '' for label in payment_percentages.index]
 
-#Here are the different payment types used by the clients of the company
-
-order_payment_type = df_orderpayments['payment_type'].value_counts()
-print (order_payment_type)
-
-#boleto --> bill or invoice that can be paid at banks and other places. Alternative to credit cards very popular in Brazil
-# Here we shall create the graphs regarding the Payment Type
-
-payment_counts = df_orderpayments['payment_type'].value_counts()
-fig, ax = plt.subplots(1,1)
-payment_counts.plot(kind='bar', ax=ax)
-ax.set_title('Payment Type Frequencies')
-ax.set_xlabel('Payment Type')
-ax.set_ylabel('Frequency')
-plt.show()
-
-
-
-payment_counts = df_orderpayments['payment_type'].value_counts()
-payment_percentages = payment_counts / payment_counts.sum() * 100
-
-payment_percentages = payment_percentages.loc[['credit_card', 'boleto', 'voucher']]
-labels = [label if label in ['credit_card', 'boleto', 'voucher'] else '' for label in payment_percentages.index]
-
-fig, ax = plt.subplots(1,1)
-ax.pie(payment_percentages, labels=labels, autopct='%1.1f%%')
-ax.set_title('Payment Type Percentages')
-
-plt.show()
+    fig, ax = plt.subplots(1,1)
+    ax.pie(payment_percentages, labels=labels, autopct='%1.1f%%')
+    ax.set_title('Payment Type Percentages')
+    st.pyplot(fig)
+    # plt.show()
 
