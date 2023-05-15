@@ -6,6 +6,9 @@ import mysql.connector
 from sqlalchemy import create_engine
 import matplotlib.ticker as mticker
 import datetime as dt
+import numpy as np
+
+st.set_page_config(layout="wide")
 
 st.markdown("# Sales Analysis Dashboard")
 st.markdown("An interactive dashboard for exploring sales data.")
@@ -18,19 +21,17 @@ host = 'localhost'
 port = '3306'
 database = 'db'
 
-# Connect to MySQL
 connection = mysql.connector.connect(user=user, password=password, host=host, port=port, database=database, use_pure=True)
 engine = create_engine(f'mysql://{user}:{password}@{host}:{port}/{database}')
 
 # Choices for the dropdown menu
-options = ["Top 10 Most Popular Product Categories", "Top 10 Sellers by Revenue", "Top 10 Customers by Spending", "Customer Retention Rate"]
+options = ["Top 10 Most Popular Product Categories", "Top 10 Sellers by Revenue", "Top 10 Customers by Spending", "Customer Retention Rate", "Order Completion Rate", "Payment Type"]
 
-# Create the dropdown menu in the sidebar
+# dropdown menu in the sidebar
 st.sidebar.markdown("## Instructions")
 st.sidebar.markdown("Please select an analysis from the dropdown menu.")
 choice = st.sidebar.selectbox("", options)
 
-# "Top 10 Most Popular Products and Categories":
 if choice == "Top 10 Most Popular Product Categories":
     query_top_products = """
     SELECT 
@@ -50,10 +51,6 @@ if choice == "Top 10 Most Popular Product Categories":
     LIMIT 10;
     """
     df = pd.read_sql_query(query_top_products, engine)
-    print(df)
-
-    # Display the dataframe
-    st.table(df.style.set_properties(subset=['product_category_name_english', 'product_id'], **{'width': '300px'}))
 
     # Bar chart for top products
     fig, ax = plt.subplots(1, 2, figsize=(18,6))
@@ -68,9 +65,9 @@ if choice == "Top 10 Most Popular Product Categories":
     category_counts['order_count'].plot(kind='pie', autopct='%1.1f%%', startangle=140, ax=ax[1])
     ax[1].set_ylabel('')  # This removes 'order_count' from the y-axis
     ax[1].set_title('Sales Distribution Across Top 10 Categories')
-
     st.pyplot(fig)
     plt.clf()
+    st.table(df.style.set_properties(subset=['product_category_name_english', 'product_id'], **{'width': '300px'}))
 
 
 elif choice == "Top 10 Sellers by Revenue":
@@ -89,14 +86,16 @@ elif choice == "Top 10 Sellers by Revenue":
     LIMIT 10;
     """
     df_top_sellers = pd.read_sql_query(query_top_sellers, engine)
-    st.table(df_top_sellers)
+
     fig, ax = plt.subplots(figsize=(12,6))
     sns.barplot(x='total_revenue', y='seller_id', data=df_top_sellers, palette='viridis')
     plt.xlabel('Total Revenue')
     plt.ylabel('Seller ID')
     plt.title('Top 10 Sellers by Revenue')
+    
     st.pyplot(fig)
     plt.clf()
+    st.table(df_top_sellers)
 
 elif choice == "Top 10 Customers by Spending":
     query_top_customers = """
@@ -114,19 +113,16 @@ elif choice == "Top 10 Customers by Spending":
     LIMIT 10;
     """
     df_top_customers = pd.read_sql_query(query_top_customers, engine)
-    st.table(df_top_customers)
+    
     fig, ax = plt.subplots(figsize=(12,6))
     sns.barplot(x='total_spent', y='customer_id', data=df_top_customers, palette='viridis')
     plt.xlabel('Total Spent')
     plt.ylabel('Customer ID')
     plt.title('Top 10 Customers by Spending')
-    st.pyplot(fig)
     
-   
-   
- 
-
-
+    st.pyplot(fig)
+    st.table(df_top_customers)
+    
 elif choice == "Customer Retention Rate":    
     query_customer_retention_rate = """
     SELECT 
@@ -144,37 +140,23 @@ elif choice == "Customer Retention Rate":
         year; 
     """
 
-    # Fetch data from database
     df_customer_retention_rate = pd.read_sql_query(query_customer_retention_rate, engine)
     
-    
-    # Display the query results with Streamlit
-    st.table(df_customer_retention_rate)
-    
-    # Set the plot style and size
     sns.set(style="whitegrid")
     fig, axes = plt.subplots(1, 2, figsize=(16,6))  # 1 row, 2 columns
 
-    # Create the line plot using Seaborn
     sns.lineplot(x='year', y='unique_customers', data=df_customer_retention_rate, marker='o', ax=axes[0])
-
-    # Set the title and labels for line plot
     axes[0].set_title('Customer Growth Over Time')
     axes[0].set_xlabel('Year')
     axes[0].set_ylabel('Unique Customers')
 
-    # Create the bar plot using Seaborn
     sns.barplot(x='year', y='unique_customers', data=df_customer_retention_rate, ax=axes[1])
-
-    # Set the title and labels for bar plot
     axes[1].set_title('Customer Growth Over Time')
     axes[1].set_xlabel('Year')
     axes[1].set_ylabel('Unique Customers')
-
-    # Display the plot with Streamlit
+    
     st.pyplot(fig)
-    # plt.show()
-
+    st.table(df_customer_retention_rate)
 
 
 

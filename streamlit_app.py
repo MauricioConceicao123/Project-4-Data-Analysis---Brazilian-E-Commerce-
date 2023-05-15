@@ -52,8 +52,6 @@ if choice == "Top 10 Most Popular Product Categories":
     """
     df = pd.read_sql_query(query_top_products, engine)
 
-    st.table(df.style.set_properties(subset=['product_category_name_english', 'product_id'], **{'width': '300px'}))
-
     # Bar chart for top products
     fig, ax = plt.subplots(1, 2, figsize=(18,6))
     sns.barplot(y='product_id', x='order_count', data=df,  palette='viridis', ax=ax[0])
@@ -67,9 +65,9 @@ if choice == "Top 10 Most Popular Product Categories":
     category_counts['order_count'].plot(kind='pie', autopct='%1.1f%%', startangle=140, ax=ax[1])
     ax[1].set_ylabel('')  # This removes 'order_count' from the y-axis
     ax[1].set_title('Sales Distribution Across Top 10 Categories')
-
     st.pyplot(fig)
     plt.clf()
+    st.table(df.style.set_properties(subset=['product_category_name_english', 'product_id'], **{'width': '300px'}))
 
 
 elif choice == "Top 10 Sellers by Revenue":
@@ -88,14 +86,16 @@ elif choice == "Top 10 Sellers by Revenue":
     LIMIT 10;
     """
     df_top_sellers = pd.read_sql_query(query_top_sellers, engine)
-    st.table(df_top_sellers)
+
     fig, ax = plt.subplots(figsize=(12,6))
     sns.barplot(x='total_revenue', y='seller_id', data=df_top_sellers, palette='viridis')
     plt.xlabel('Total Revenue')
     plt.ylabel('Seller ID')
     plt.title('Top 10 Sellers by Revenue')
+    
     st.pyplot(fig)
     plt.clf()
+    st.table(df_top_sellers)
 
 elif choice == "Top 10 Customers by Spending":
     query_top_customers = """
@@ -113,13 +113,15 @@ elif choice == "Top 10 Customers by Spending":
     LIMIT 10;
     """
     df_top_customers = pd.read_sql_query(query_top_customers, engine)
-    st.table(df_top_customers)
+    
     fig, ax = plt.subplots(figsize=(12,6))
     sns.barplot(x='total_spent', y='customer_id', data=df_top_customers, palette='viridis')
     plt.xlabel('Total Spent')
     plt.ylabel('Customer ID')
     plt.title('Top 10 Customers by Spending')
+    
     st.pyplot(fig)
+    st.table(df_top_customers)
     
 elif choice == "Customer Retention Rate":    
     query_customer_retention_rate = """
@@ -140,31 +142,26 @@ elif choice == "Customer Retention Rate":
 
     df_customer_retention_rate = pd.read_sql_query(query_customer_retention_rate, engine)
     
-    st.table(df_customer_retention_rate)
-
     sns.set(style="whitegrid")
-    
     fig, axes = plt.subplots(1, 2, figsize=(16,6))  # 1 row, 2 columns
 
     sns.lineplot(x='year', y='unique_customers', data=df_customer_retention_rate, marker='o', ax=axes[0])
-
     axes[0].set_title('Customer Growth Over Time')
     axes[0].set_xlabel('Year')
     axes[0].set_ylabel('Unique Customers')
 
     sns.barplot(x='year', y='unique_customers', data=df_customer_retention_rate, ax=axes[1])
-
     axes[1].set_title('Customer Growth Over Time')
     axes[1].set_xlabel('Year')
     axes[1].set_ylabel('Unique Customers')
-
+    
     st.pyplot(fig)
+    st.table(df_customer_retention_rate)
  
     #Mauricios Part
     
 
 if choice == "Order Completion Rate":
-
     query_orders = "SELECT*FROM orders"
     df_orders = pd.read_sql_query(query_orders,connection)
 
