@@ -21,8 +21,7 @@ user = 'root'
 password = 'password'
 host = 'localhost'
 port = '3306'
-database = 'db'
-
+database = 'bd'
 connection = mysql.connector.connect(user=user, password=password, host=host, port=port, database=database, use_pure=True)
 engine = create_engine(f'mysql://{user}:{password}@{host}:{port}/{database}')
 
@@ -106,7 +105,7 @@ elif choice == "Top 10 Sellers by Revenue":
         total_revenue DESC
     LIMIT 10;
     """
-    df_top_sellers = pd.read_sql_query(query_top_sellers, engine)
+    df_top_sellers = pd.read_sql_query(query_top_sellers, connection)
 
     # Query for average revenue for all sellers
     query_avg_revenue = """
@@ -234,6 +233,7 @@ if choice == "Order Completion Rate":
     ax.set_title('Order Completion Rate')
     ax.set_xlabel('Order Status')
     ax.set_ylabel('Frequency')
+    st.write("The Olist Store has a very sucessfull completion rate overall. Betweem 2016 and 2018  about 96.455 orders were delivered ith just 6 being cancelled")
     
     # Add data labels on top of each bar
     for bar in bars.patches:
@@ -270,6 +270,8 @@ if choice == "Payment Type":
         ax[1].set_title('Payment Type Percentages')
 
         st.pyplot(fig)
+        st.write("The table above us displays the distribution of payment methods used by the clients between 2016 and 2018.The most commonly used payment method was credit card, with a total count of 75,387 transactions. This indicates that credit card payments were the preferred choice among the clients")
+        st.write("The second most popular payment method was boleto, with a count of 19,784 transactions. Boleto is a widely used payment method in Brazil, allowing customers to generate a payment slip and pay offline via banks or authorized agents")
         # st.write(df_orderpayments)
     else:
         st.write("No data to display for Payment Type.")
