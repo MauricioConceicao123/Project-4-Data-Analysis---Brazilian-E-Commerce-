@@ -56,7 +56,7 @@ if choice == "Top 10 Most Popular Product Categories":
     LIMIT 10;
     """
     df = pd.read_sql_query(query_top_products, engine)
-
+    
     # Bar chart for top products
     fig, ax = plt.subplots(1, 2, figsize=(18,6))
     sns.barplot(y='product_id', x='order_count', data=df,  palette='coolwarm', ax=ax[0])
@@ -73,6 +73,23 @@ if choice == "Top 10 Most Popular Product Categories":
     st.pyplot(fig)
     plt.clf()
     st.table(df.style.set_properties(subset=['product_category_name_english', 'product_id'], **{'width': '300px'}))
+
+    # # Bar chart for top products
+    # fig, ax = plt.subplots(1, 2, figsize=(18,6))
+    # sns.barplot(y='product_category_name_english', x='order_count', data=df,  palette='coolwarm', ax=ax[0])
+    # ax[0].set_xlabel('Order Count')
+    # ax[0].set_ylabel('Product ID')
+    # ax[0].set_title('Top 10 Most Popular Products')
+
+    # # Pie chart for top categories
+    # category_counts = df.groupby('product_category_name_english')['order_count'].sum().reset_index()
+    # category_counts.set_index('product_category_name_english', inplace=True)
+    # category_counts['order_count'].plot(kind='pie', autopct='%1.1f%%', startangle=140, ax=ax[1])
+    # ax[1].set_ylabel('')  # This removes 'order_count' from the y-axis
+    # ax[1].set_title('Sales Distribution Across Top 10 Categories')
+    # st.pyplot(fig)
+    # plt.clf()
+    # st.table(df.style.set_properties(subset=['product_category_name_english', 'product_id'], **{'width': '300px'}))
   
 elif choice == "Top 10 Sellers by Revenue":
     query_top_sellers = """
@@ -110,14 +127,14 @@ elif choice == "Top 10 Sellers by Revenue":
 
     fig, ax = plt.subplots(figsize=(12,6))
     sns.barplot(x='total_revenue', y='seller_id', data=df_top_sellers, palette='coolwarm', ax=ax)
-    ax.axvline(avg_revenue, color='r', linestyle='--')  # Add vertical line for average revenue
-    plt.xlabel('Total Revenue')
+    ax.axvline(avg_revenue, color='r', linestyle='--')  # Adding a vertical line for average revenue
+    plt.xlabel('Total Revenue in R$')
     plt.ylabel('Seller ID')
-    plt.title(f'Top 10 Sellers by Revenue (Average Revenue: {avg_revenue:.2f})')
+    plt.title(f'Top 10 Sellers by Revenue (Average Revenue: {avg_revenue:.2f} R$)')
     
     st.pyplot(fig)
     plt.clf()
-    st.markdown(f'**Average Revenue for All Sellers: {avg_revenue:.2f}**')
+    st.markdown(f'**Average Revenue for All Sellers: {avg_revenue:.2f} R$**')
     st.table(df_top_sellers)
 
 
@@ -168,9 +185,7 @@ elif choice == "Top 10 Customers by Spending":
     st.markdown(f'**Average Spending for All Customers: {avg_spent:.2f}**')
     st.table(df_top_customers)
 
-
-
-    
+ 
 elif choice == "Customer Retention Rate":    
     query_customer_retention_rate = """
     SELECT 
