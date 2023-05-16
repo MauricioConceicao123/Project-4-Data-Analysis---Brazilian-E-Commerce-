@@ -234,7 +234,7 @@ if choice == "Order Completion Rate":
     ax.set_title('Order Completion Rate')
     ax.set_xlabel('Order Status')
     ax.set_ylabel('Frequency')
-    st.write("The Olist Store has a very sucessfull completion rate overall. Betweem 2016 and 2018  about 96.455 orders were delivered ith just 6 being cancelled")
+    st.write("The Olist Store has a very sucessfull completion rate overall. Betweem 2016 and 2018  about 96.455 orders were delivered with just 6 being cancelled")
     
     # Add data labels on top of each bar
     for bar in bars.patches:
