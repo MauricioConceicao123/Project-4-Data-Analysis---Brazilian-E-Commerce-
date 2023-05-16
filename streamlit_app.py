@@ -1,3 +1,18 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import streamlit as st
 import pandas as pd
 import seaborn as sns
@@ -12,8 +27,8 @@ st.set_page_config(layout="wide")
 
 sns.set_palette('coolwarm')
 
-st.markdown("# Sales Analysis Dashboard")
-st.markdown("An interactive dashboard for exploring sales data.")
+st.title("Olist Ecommerce Dashboard")
+# st.header("An interactive dashboard for exploring sales data.")
 
 
 # Connection settings
@@ -27,7 +42,7 @@ connection = mysql.connector.connect(user=user, password=password, host=host, po
 engine = create_engine(f'mysql://{user}:{password}@{host}:{port}/{database}')
 
 # Choices for the dropdown menu
-options = ["Top 10 Most Popular Product Categories", "Top 10 Sellers by Revenue", "Top 10 Customers by Spending", "Customer Retention Rate", "Order Completion Rate", "Payment Type"]
+options = ["Top 10 Most Popular Product and Categories", "Top 10 Sellers by Revenue", "Top 10 Customers by Spending", "Customer Growth", "Order Completion Rate", "Payment Type"]
 
 # dropdown menu in the sidebar
 st.sidebar.markdown("## Instructions")
@@ -37,7 +52,7 @@ choice = st.sidebar.selectbox("", options)
 
 
 
-if choice == "Top 10 Most Popular Product Categories":
+if choice == "Top 10 Most Popular Product and Categories":
     query_top_products = """
     SELECT 
         p.product_id,
@@ -56,6 +71,7 @@ if choice == "Top 10 Most Popular Product Categories":
     LIMIT 10;
     """
     df = pd.read_sql_query(query_top_products, engine)
+    st.header('Top 10 Most Popular Product and Categories')
     
     # Bar chart for top products
     fig, ax = plt.subplots(1, 2, figsize=(18,6))
@@ -74,22 +90,6 @@ if choice == "Top 10 Most Popular Product Categories":
     plt.clf()
     st.table(df.style.set_properties(subset=['product_category_name_english', 'product_id'], **{'width': '300px'}))
 
-    # # Bar chart for top products
-    # fig, ax = plt.subplots(1, 2, figsize=(18,6))
-    # sns.barplot(y='product_category_name_english', x='order_count', data=df,  palette='coolwarm', ax=ax[0])
-    # ax[0].set_xlabel('Order Count')
-    # ax[0].set_ylabel('Product ID')
-    # ax[0].set_title('Top 10 Most Popular Products')
-
-    # # Pie chart for top categories
-    # category_counts = df.groupby('product_category_name_english')['order_count'].sum().reset_index()
-    # category_counts.set_index('product_category_name_english', inplace=True)
-    # category_counts['order_count'].plot(kind='pie', autopct='%1.1f%%', startangle=140, ax=ax[1])
-    # ax[1].set_ylabel('')  # This removes 'order_count' from the y-axis
-    # ax[1].set_title('Sales Distribution Across Top 10 Categories')
-    # st.pyplot(fig)
-    # plt.clf()
-    # st.table(df.style.set_properties(subset=['product_category_name_english', 'product_id'], **{'width': '300px'}))
   
 elif choice == "Top 10 Sellers by Revenue":
     query_top_sellers = """
@@ -107,6 +107,7 @@ elif choice == "Top 10 Sellers by Revenue":
     LIMIT 10;
     """
     df_top_sellers = pd.read_sql_query(query_top_sellers, engine)
+    st.header('Top 10 Sellers by Revenue')
 
     # Query for average revenue for all sellers
     query_avg_revenue = """
@@ -155,6 +156,7 @@ elif choice == "Top 10 Customers by Spending":
     LIMIT 10;
     """
     df_top_customers = pd.read_sql_query(query_top_customers, engine)
+    st.header('Top 10 Customers by Spending')
 
     # Query for average spending for all customers
     query_avg_spent = """
@@ -172,22 +174,22 @@ elif choice == "Top 10 Customers by Spending":
             o.customer_id) subquery
     """
     avg_spent = pd.read_sql_query(query_avg_spent, engine).iloc[0]['avg_spent']
-
+    
     fig, ax = plt.subplots(figsize=(12,6))
     sns.barplot(x='total_spent', y='customer_id', data=df_top_customers, palette='coolwarm', ax=ax)
     ax.axvline(avg_spent, color='r', linestyle='--')  # Add vertical line for average spending
-    plt.xlabel('Total Spent')
+    plt.xlabel('Total Spent in R$')
     plt.ylabel('Customer ID')
-    plt.title(f'Top 10 Customers by Spending (Average Spending: {avg_spent:.2f})')
+    plt.title(f'Top 10 Customers by Spending (Average Spending: {avg_spent:.2f} R$)')
     
     st.pyplot(fig)
     plt.clf()
-    st.markdown(f'**Average Spending for All Customers: {avg_spent:.2f}**')
+    st.markdown(f'**Average Spending for All Customers: {avg_spent:.2f} R$**')
     st.table(df_top_customers)
 
  
-elif choice == "Customer Retention Rate":    
-    query_customer_retention_rate = """
+elif choice == "Customer Growth":    
+    query_customer_count = """
     SELECT 
         EXTRACT(YEAR FROM o.order_purchase_timestamp) AS year,
         COUNT(DISTINCT c.customer_unique_id) AS unique_customers
@@ -203,29 +205,29 @@ elif choice == "Customer Retention Rate":
         year; 
     """
 
-    df_customer_retention_rate = pd.read_sql_query(query_customer_retention_rate, engine)
+    df_customer_count = pd.read_sql_query(query_customer_count, engine)
+    st.header('Customer Growth')
     
     sns.set(style="whitegrid")
     fig, axes = plt.subplots(1, 2, figsize=(16,6))  # 1 row, 2 columns
 
-    sns.lineplot(x='year', y='unique_customers', data=df_customer_retention_rate, palette='coolwarm', marker='o', ax=axes[0])
+    sns.lineplot(x='year', y='unique_customers', data=df_customer_count, palette='coolwarm', marker='o', ax=axes[0])
     axes[0].set_title('Customer Growth Over Time')
     axes[0].set_xlabel('Year')
     axes[0].set_ylabel('Unique Customers')
 
-    sns.barplot(x='year', y='unique_customers', data=df_customer_retention_rate, palette='coolwarm', ax=axes[1])
+    sns.barplot(x='year', y='unique_customers', data= df_customer_count, palette='coolwarm', ax=axes[1])
     axes[1].set_title('Customer Growth Over Time')
     axes[1].set_xlabel('Year')
     axes[1].set_ylabel('Unique Customers')
     
     st.pyplot(fig)
-    st.table(df_customer_retention_rate)
-
-
+    st.table(df_customer_count)
 
 if choice == "Order Completion Rate":
     query_orders = "SELECT*FROM orders"
     df_orders = pd.read_sql_query(query_orders,connection)
+    st.header('Order Completion Rate')
 
     order_status_count = df_orders['order_status'].value_counts()
 
@@ -243,13 +245,10 @@ if choice == "Order Completion Rate":
     st.pyplot(fig)
     plt.clf()
 
-
-
-
-
 if choice == "Payment Type":
     query_orderpayments = "SELECT * FROM order_payments"
     df_orderpayments = pd.read_sql_query(query_orderpayments, connection)
+    st.header('Payment Type')
 
     if not df_orderpayments.empty:
         payment_counts = df_orderpayments['payment_type'].value_counts()
@@ -273,6 +272,60 @@ if choice == "Payment Type":
         # st.write(df_orderpayments)
     else:
         st.write("No data to display for Payment Type.")
+
+
+        
+        
+
+
+
+
+
+
+
+
+
+        
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+        
+
+
+
+
+
+
+
+
+
+        
+        
+
+
+
+
+
+
+
 
 
         
