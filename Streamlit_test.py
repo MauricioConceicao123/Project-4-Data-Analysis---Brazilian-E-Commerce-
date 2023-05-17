@@ -22,7 +22,6 @@ password = 'password'
 host = 'localhost'
 port = '3306'
 database = 'db'
-
 connection = mysql.connector.connect(user=user, password=password, host=host, port=port, database=database, use_pure=True)
 engine = create_engine(f'mysql://{user}:{password}@{host}:{port}/{database}')
 
@@ -33,9 +32,6 @@ options = ["Top 10 Most Popular Product and Categories", "Top 10 Sellers by Reve
 st.sidebar.markdown("## Instructions")
 st.sidebar.markdown("Please select an analysis from the dropdown menu.")
 choice = st.sidebar.selectbox("", options)
-
-
-
 
 if choice == "Top 10 Most Popular Product and Categories":
     query_top_products = """
@@ -75,7 +71,6 @@ if choice == "Top 10 Most Popular Product and Categories":
     plt.clf()
     st.table(df.style.set_properties(subset=['product_category_name_english', 'product_id'], **{'width': '300px'}))
 
-  
 elif choice == "Top 10 Sellers by Revenue":
     query_top_sellers = """
     SELECT 
@@ -92,7 +87,6 @@ elif choice == "Top 10 Sellers by Revenue":
     LIMIT 10;
     """
     df_top_sellers = pd.read_sql_query(query_top_sellers, engine)
-    st.header('Top 10 Sellers by Revenue')
 
     # Query for average revenue for all sellers
     query_avg_revenue = """
@@ -123,8 +117,6 @@ elif choice == "Top 10 Sellers by Revenue":
     st.markdown(f'**Average Revenue for All Sellers: {avg_revenue:.2f} R$**')
     st.table(df_top_sellers)
 
-
-
 elif choice == "Top 10 Customers by Spending":
     query_top_customers = """
     SELECT 
@@ -142,7 +134,6 @@ elif choice == "Top 10 Customers by Spending":
     """
     df_top_customers = pd.read_sql_query(query_top_customers, engine)
     st.header('Top 10 Customers by Spending')
-
     # Query for average spending for all customers
     query_avg_spent = """
     SELECT 
@@ -159,7 +150,6 @@ elif choice == "Top 10 Customers by Spending":
             o.customer_id) subquery
     """
     avg_spent = pd.read_sql_query(query_avg_spent, engine).iloc[0]['avg_spent']
-    
     fig, ax = plt.subplots(figsize=(12,6))
     sns.barplot(x='total_spent', y='customer_id', data=df_top_customers, palette='coolwarm', ax=ax)
     ax.axvline(avg_spent, color='r', linestyle='--')  # Add vertical line for average spending
@@ -221,6 +211,7 @@ if choice == "Order Completion Rate":
     ax.set_title('Order Completion Rate')
     ax.set_xlabel('Order Status')
     ax.set_ylabel('Frequency')
+    st.write("The Olist Store has a very sucessfull completion rate overall. Betweem 2016 and 2018  about 96.455 orders were delivered with just 6 being cancelled")
     
     # Add data labels on top of each bar
     for bar in bars.patches:
@@ -254,9 +245,54 @@ if choice == "Payment Type":
         ax[1].set_title('Payment Type Percentages')
 
         st.pyplot(fig)
+        st.write("The table above us displays the distribution of payment methods used by the clients between 2016 and 2018.The most commonly used payment method was credit card, with a total count of 75,387 transactions. This indicates that credit card payments were the preferred choice among the clients")
+        st.write("The second most popular payment method was boleto, with a count of 19,784 transactions. Boleto is a widely used payment method in Brazil, allowing customers to generate a payment slip and pay offline via banks or authorized agents")
         # st.write(df_orderpayments)
     else:
         st.write("No data to display for Payment Type.")
+
+
+        
+        
+
+
+
+
+
+
+
+
+
+        
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+        
+
+
+
+
+
+
+
 
 
         
