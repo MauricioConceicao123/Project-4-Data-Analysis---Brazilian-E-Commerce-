@@ -1,18 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import streamlit as st
 import pandas as pd
 import seaborn as sns
@@ -47,9 +32,6 @@ options = ["Top 10 Most Popular Product and Categories", "Top 10 Sellers by Reve
 st.sidebar.markdown("## Instructions")
 st.sidebar.markdown("Please select an analysis from the dropdown menu.")
 choice = st.sidebar.selectbox("", options)
-
-
-
 
 if choice == "Top 10 Most Popular Product and Categories":
     query_top_products = """
@@ -89,7 +71,6 @@ if choice == "Top 10 Most Popular Product and Categories":
     plt.clf()
     st.table(df.style.set_properties(subset=['product_category_name_english', 'product_id'], **{'width': '300px'}))
 
-  
 elif choice == "Top 10 Sellers by Revenue":
     query_top_sellers = """
     SELECT 
@@ -136,8 +117,6 @@ elif choice == "Top 10 Sellers by Revenue":
     st.markdown(f'**Average Revenue for All Sellers: {avg_revenue:.2f} R$**')
     st.table(df_top_sellers)
 
-
-
 elif choice == "Top 10 Customers by Spending":
     query_top_customers = """
     SELECT 
@@ -155,7 +134,6 @@ elif choice == "Top 10 Customers by Spending":
     """
     df_top_customers = pd.read_sql_query(query_top_customers, engine)
     st.header('Top 10 Customers by Spending')
-
     # Query for average spending for all customers
     query_avg_spent = """
     SELECT 
@@ -172,7 +150,6 @@ elif choice == "Top 10 Customers by Spending":
             o.customer_id) subquery
     """
     avg_spent = pd.read_sql_query(query_avg_spent, engine).iloc[0]['avg_spent']
-    
     fig, ax = plt.subplots(figsize=(12,6))
     sns.barplot(x='total_spent', y='customer_id', data=df_top_customers, palette='coolwarm', ax=ax)
     ax.axvline(avg_spent, color='r', linestyle='--')  # Add vertical line for average spending
