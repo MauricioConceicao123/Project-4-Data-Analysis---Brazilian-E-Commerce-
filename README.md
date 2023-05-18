@@ -13,7 +13,7 @@ This project is an interactive data analysis dashboard for exploring Olist Ecomm
 
 ## Prerequisites
 
-- Python 3.x
+- Python 3.11.2
 - Streamlit
 - pandas
 - seaborn
